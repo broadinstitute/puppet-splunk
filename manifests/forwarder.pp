@@ -235,6 +235,9 @@ class splunk::forwarder (
   # there is non-generic configuration that needs to be declared in addition
   # to the agnostic resources declared here.
   if $facts['kernel'] in ['Linux', 'SunOS', 'FreeBSD'] {
+    contain 'splunk::forwarder::install'
+    contain 'splunk::forwarder::config'
+    contain 'splunk::forwarder::service'
     contain 'splunk::forwarder::service::nix'
     Class['splunk::forwarder::config']
     -> Class['splunk::forwarder::service::nix']
