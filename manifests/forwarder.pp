@@ -220,21 +220,25 @@ class splunk::forwarder (
     info("The setting \"reset_seeded_password\" will delete ${password_config_file} on each run of Puppet and generate a corrective change event, the file must be absent for Splunk's admin password seeding process to be triggered so this setting should only be used temporarily as it'll also cause a resart of the Splunk service")
   }
 
-  contain 'splunk::forwarder::install'
-  contain 'splunk::forwarder::config'
-  contain 'splunk::forwarder::service'
-
-  Class['splunk::forwarder::install']
-  -> Class['splunk::forwarder::config']
-  ~> Class['splunk::forwarder::service']
+  if $splunk::forwarder::package_ensure == absent {
+    Class['splunk::forwarder::service']
+  } else {
+    contain 'splunk::forwarder::install'
+    contain 'splunk::forwarder::config'
+    contain 'splunk::forwarder::service'
+    Class['splunk::forwarder::install']
+    -> Class['splunk::forwarder::config']
+    ~> Class['splunk::forwarder::service']
+  }
 
   # This is a module that supports multiple platforms. For some platforms
   # there is non-generic configuration that needs to be declared in addition
   # to the agnostic resources declared here.
   if $facts['kernel'] in ['Linux', 'SunOS', 'FreeBSD'] {
-    contain 'splunk::forwarder::service::nix'
+    contain 'splunk::forwarder::install'
+    contain 'splunk::forwarder::config'
+    contain 'splunk::forwarder::service'
     Class['splunk::forwarder::config']
-    -> Class['splunk::forwarder::service::nix']
     -> Class['splunk::forwarder::service']
   }
 

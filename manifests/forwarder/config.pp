@@ -44,21 +44,37 @@ class splunk::forwarder::config {
     default   => '0600',
   }
 
-  file { ["${splunk::forwarder::forwarder_homedir}/etc/system/local/deploymentclient.conf",
-      "${splunk::forwarder::forwarder_homedir}/etc/system/local/outputs.conf",
-      "${splunk::forwarder::forwarder_homedir}/etc/system/local/inputs.conf",
-      "${splunk::forwarder::forwarder_homedir}/etc/system/local/props.conf",
-      "${splunk::forwarder::forwarder_homedir}/etc/system/local/transforms.conf",
-      "${splunk::forwarder::forwarder_homedir}/etc/system/local/web.conf",
-      "${splunk::forwarder::forwarder_homedir}/etc/system/local/limits.conf",
-    "${splunk::forwarder::forwarder_homedir}/etc/system/local/server.conf"]:
-      ensure => file,
-      tag    => 'splunk_forwarder',
-      owner  => $splunk::forwarder::splunk_user,
-      group  => $splunk::forwarder::splunk_user,
-      mode   => $_forwarder_file_mode,
+  if $splunk::forwarder::package_ensure == absent {
+    file { ["${splunk::forwarder::forwarder_homedir}/etc/system/local/deploymentclient.conf",
+        "${splunk::forwarder::forwarder_homedir}/etc/system/local/outputs.conf",
+        "${splunk::forwarder::forwarder_homedir}/etc/system/local/inputs.conf",
+        "${splunk::forwarder::forwarder_homedir}/etc/system/local/props.conf",
+        "${splunk::forwarder::forwarder_homedir}/etc/system/local/transforms.conf",
+        "${splunk::forwarder::forwarder_homedir}/etc/system/local/web.conf",
+        "${splunk::forwarder::forwarder_homedir}/etc/system/local/limits.conf",
+      "${splunk::forwarder::forwarder_homedir}/etc/system/local/server.conf"]:
+        ensure => absent,
+        tag    => 'splunk_forwarder',
+        owner  => $splunk::forwarder::splunk_user,
+        group  => $splunk::forwarder::splunk_user,
+        mode   => $_forwarder_file_mode,
+    }
+  } else {
+    file { ["${splunk::forwarder::forwarder_homedir}/etc/system/local/deploymentclient.conf",
+        "${splunk::forwarder::forwarder_homedir}/etc/system/local/outputs.conf",
+        "${splunk::forwarder::forwarder_homedir}/etc/system/local/inputs.conf",
+        "${splunk::forwarder::forwarder_homedir}/etc/system/local/props.conf",
+        "${splunk::forwarder::forwarder_homedir}/etc/system/local/transforms.conf",
+        "${splunk::forwarder::forwarder_homedir}/etc/system/local/web.conf",
+        "${splunk::forwarder::forwarder_homedir}/etc/system/local/limits.conf",
+      "${splunk::forwarder::forwarder_homedir}/etc/system/local/server.conf"]:
+        ensure => file,
+        tag    => 'splunk_forwarder',
+        owner  => $splunk::forwarder::splunk_user,
+        group  => $splunk::forwarder::splunk_user,
+        mode   => $_forwarder_file_mode,
+    }
   }
-
   if $splunk::forwarder::use_default_config {
     splunkforwarder_web { 'forwarder_splunkd_port':
       section => 'settings',
