@@ -238,9 +238,7 @@ class splunk::forwarder (
     contain 'splunk::forwarder::install'
     contain 'splunk::forwarder::config'
     contain 'splunk::forwarder::service'
-    contain 'splunk::forwarder::service::nix'
     Class['splunk::forwarder::config']
-    -> Class['splunk::forwarder::service::nix']
     -> Class['splunk::forwarder::service']
   }
 
